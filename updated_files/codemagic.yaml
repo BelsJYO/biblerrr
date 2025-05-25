@@ -1,0 +1,27 @@
+workflows:
+  android-app:
+    name: Bible Quote Widget Build
+    instance_type: mac_mini_m1
+    max_build_duration: 30
+    environment:
+      vars:
+        PACKAGE_NAME: "com.example.biblequotewidget"
+    scripts:
+      - name: Set up local properties
+        script: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
+      - name: Accept Android SDK licenses
+        script: |
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
+      - name: Install required SDK components
+        script: |
+          $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platforms;android-33" "build-tools;30.0.3"
+      - name: Build Android app
+        script: |
+          ./gradlew assembleDebug
+    artifacts:
+      - app/build/outputs/apk/debug/*.apk
+    publishing:
+      email:
+        recipients:
+          - user@example.com
